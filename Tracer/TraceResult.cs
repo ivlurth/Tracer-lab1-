@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 namespace Tracer
 {
 
+    [Serializable]
     public class TraceResult
     {
         public List<TracingThread> threads { get; set; } 
@@ -18,13 +19,16 @@ namespace Tracer
         }
     }
 
- 
+
+    [Serializable]
     public class TracingThread
     {
-  
+
+        [XmlAttribute]
         public int id { get; set; }
 
-     
+
+        [XmlAttribute]
         public long time { get; set; }
 
         public List<TracingMethod> methods { get; set; }
@@ -72,15 +76,18 @@ namespace Tracer
 
     }
 
+
+    [Serializable]
     public class TracingMethod
     {
-       
+
+        [XmlAttribute]
         public string name { get; set; }
 
-        
+        [XmlAttribute]
         public string className { get; set; }
 
-        
+        [XmlAttribute]
         public long time { get; set; }
 
         public List<TracingMethod> methods { get; set; }
