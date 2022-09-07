@@ -36,7 +36,40 @@ namespace Tracer
             this.methods = new();            
         }
 
- 
+
+        public override bool Equals(object obj)
+        {
+            try
+            {
+                if (((TracingThread)obj).id == this.id) return true;
+            }
+            catch (InvalidCastException)
+            {
+                return false;
+            }
+            return false;
+        }
+
+        public TracingMethod GetMethod(TracingMethod method)
+        { // ищет метод в списке методов потока
+            foreach (var m in this.methods)
+            {
+                if (method.Equals(m)) return m;
+                if (m.GetMethod(method) != null) return m.GetMethod(method);
+            }
+            return null;
+        }
+
+        public TracingMethod GetStartedMethod(TracingMethod method)
+        { // ищет метод в списке методов потока
+            foreach (var m in this.methods)
+            {
+                if (method.Equals(m) && (m.time == 0)) return m;
+                if (m.GetMethod(method) != null) return m.GetStartedMethod(method);
+            }
+            return null;
+        }
+
     }
 
     public class TracingMethod
