@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+
+    <StartupObject>TestProjectTracer.UnitTest1</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,3 +1,4 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using Tracer;
 
@@ -8,7 +9,38 @@ namespace TestProjectTracer
     public class UnitTest1
 
     {
-         private static void Check<T>(T t, T u, string hint)
+
+
+        delegate void test_method();
+        private static ITracer tracer;
+
+
+        public static void Main(string[] args)
+        {
+            test_method testDelegate;
+            TestRunner<test_method> r = new TestRunner<test_method>();
+
+            testDelegate = TestMultipleThreads;
+            r.RunTest(testDelegate, "MultipleThreadsTest");
+
+            testDelegate = TestThreadTime;
+            r.RunTest(testDelegate, "TestThreadTime");
+
+            testDelegate = TestManyThreadsAtOnce;
+            r.RunTest(testDelegate, "TestManyThreadsAtOnce");
+
+            testDelegate = TestMethodNames;
+            r.RunTest(testDelegate, "TestMethodNames");
+
+            testDelegate = TestMethodClasses;
+            r.RunTest(testDelegate, "TestMethodClass  es");
+
+            Console.ReadLine();
+        }
+
+
+        [System.Diagnostics.DebuggerStepThrough]
+        private static void Check<T>(T t, T u, string hint)
         {
             if (!t.Equals(u))
             {
@@ -21,9 +53,9 @@ namespace TestProjectTracer
             }
         }
 
-        private static ITracer tracer;
+   
 
-        [TestMethod]
+        [System.Diagnostics.DebuggerStepThrough]
         static void TestMultipleThreads()
         {
             tracer = new Tracer.Tracer();
@@ -41,7 +73,7 @@ namespace TestProjectTracer
         }
 
 
-        [TestMethod]
+        [System.Diagnostics.DebuggerStepThrough]
         static void TestThreadTime()
         {
             tracer = new Tracer.Tracer();
@@ -63,7 +95,7 @@ namespace TestProjectTracer
         }
 
 
-        [TestMethod]
+        [System.Diagnostics.DebuggerStepThrough]
         static void TestManyThreadsAtOnce()
         {
             tracer = new Tracer.Tracer();
@@ -80,7 +112,7 @@ namespace TestProjectTracer
             Check(tr.threads.Count, 5, "5 threads are expected");
         }
 
-        [TestMethod]
+        [System.Diagnostics.DebuggerStepThrough]
         static void TestMethodNames()
         {
             tracer = new Tracer.Tracer();
@@ -98,7 +130,8 @@ namespace TestProjectTracer
         }
 
 
-        [TestMethod]
+
+        [System.Diagnostics.DebuggerStepThrough]
         static void TestMethodClasses()
         {
             tracer = new Tracer.Tracer();
@@ -116,7 +149,32 @@ namespace TestProjectTracer
         }
 
 
+       
 
+    }
 
+    class TestRunner<Z> where Z : Delegate
+    {
+        private long failCount = 0;
+
+        public void RunTest(Z func, string testName)
+        {
+            try
+            {
+                func.DynamicInvoke();
+                Console.Error.WriteLine(testName + " OK");
+            }
+            catch (SystemException e)
+            {
+                ++failCount;
+                Console.Error.WriteLine(testName + " failed: " + e.Message);
+            }
+            catch { }
+        }
+
+        ~TestRunner()
+        {
+            Console.Error.WriteLine("{0} tests failed. Terminate", failCount);
+        }
     }
 }
